@@ -17,7 +17,7 @@ pub enum Mode {
 }
 
 impl Config {
-    fn from_args() -> Self {
+    pub fn from_args() -> Self {
         use clap::ArgGroup;
 
         let app = clap_app!(srn =>
