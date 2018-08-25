@@ -11,7 +11,7 @@ pub struct FileMeta {
 }
 
 impl FileMeta {
-    pub fn from_entry(entry: DirEntry) -> io::Result<Self> {
+    pub fn from_entry(entry: &DirEntry) -> io::Result<Self> {
         let meta = entry.metadata()?;
 
         if !meta.file_type().is_file() {
@@ -30,6 +30,6 @@ impl FileMeta {
     }
 
     pub fn try_from_entry(entry: io::Result<DirEntry>) -> io::Result<Self> {
-        entry.and_then(Self::from_entry)
+        Self::from_entry(&entry?)
     }
 }
