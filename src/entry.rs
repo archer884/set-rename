@@ -30,6 +30,6 @@ impl FileMeta {
     }
 
     pub fn try_from_entry(entry: io::Result<DirEntry>) -> io::Result<Self> {
-        Self::from_entry(entry?)
+        entry.and_then(Self::from_entry)
     }
 }
