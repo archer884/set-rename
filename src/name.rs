@@ -1,20 +1,38 @@
-struct NameGenerator {
-    base: String,
-    count: usize,
+pub struct NameGenerator<'base> {
+    base: &'base str,
+    padding: usize,
 }
 
-impl NameGenerator {
-    pub fn new(base: String) -> Self {
-        Self { base, count: 0 }
+pub struct NameIter<'gen> {
+    current: usize,
+    generator: &'gen NameGenerator<'gen>,
+}
+
+impl<'base> NameGenerator<'base> {
+    pub fn new(base: &'base str, padding: usize) -> Self {
+        Self {
+            base,
+            padding,
+        }
     }
 
-    pub fn next(&mut self) -> String {
-        self.count += 1;
-        format!("{}{}", self.base, self.count)
+    pub fn names(&'base self) -> NameIter<'base> {
+        NameIter {
+            current: 0,
+            generator: self,
+        }
     }
 
-    pub fn next_padded(&mut self, padding: usize) -> String {
-        self.count += 1;
-        format!("{}{:0padding$}", self.base, self.count, padding = padding)
+    fn next_padded(&self, count: usize) -> String {
+        format!("{}{:0padding$}", self.base, count, padding = self.padding)
+    }
+}
+
+impl<'base> Iterator for NameIter<'base> {
+    type Item = String;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.current += 1;
+        Some(self.generator.next_padded(self.current))
     }
 }
