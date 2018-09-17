@@ -9,8 +9,7 @@ mod name;
 use std::io;
 
 fn main() -> io::Result<()> {
-    use application::Application;
-    use config::Config;
+    use crate::{application::Application, config::Config};
 
     Application::new(Config::from_args())?.run()
 }

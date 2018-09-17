@@ -1,7 +1,7 @@
 pub struct Config {
-    sort: OrderBy,
-    mode: Mode,
-    base: String,
+    pub sort: OrderBy,
+    pub mode: Mode,
+    pub base: String,
 }
 
 pub enum OrderBy {

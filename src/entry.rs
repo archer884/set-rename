@@ -4,10 +4,10 @@ use std::path::PathBuf;
 use std::time::SystemTime;
 
 pub struct FileMeta {
-    path: PathBuf,
-    length: u64,
-    created: SystemTime,
-    modified: SystemTime,
+    pub path: PathBuf,
+    pub length: u64,
+    pub created: SystemTime,
+    pub modified: SystemTime,
 }
 
 impl FileMeta {
