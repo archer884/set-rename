@@ -10,10 +10,7 @@ pub struct NameIter<'gen> {
 
 impl<'base> NameGenerator<'base> {
     pub fn new(base: &'base str, padding: usize) -> Self {
-        Self {
-            base,
-            padding,
-        }
+        Self { base, padding }
     }
 
     pub fn names(&'base self) -> NameIter<'base> {

@@ -46,7 +46,11 @@ impl Application {
     }
 }
 
-fn apply(entries: impl IntoIterator<Item = FileMeta>, names: impl IntoIterator<Item = String>, f: fn(&Path, &Path) -> io::Result<()>) -> io::Result<()> {
+fn apply(
+    entries: impl IntoIterator<Item = FileMeta>,
+    names: impl IntoIterator<Item = String>,
+    f: fn(&Path, &Path) -> io::Result<()>,
+) -> io::Result<()> {
     let pairs = entries.into_iter().zip(names);
     for (left, right) in pairs {
         let right = build_new_path(&left.path, &right);
@@ -72,10 +76,10 @@ fn rename(left: &Path, right: &Path) -> io::Result<()> {
 fn build_new_path(path: impl AsRef<Path>, name: &str) -> PathBuf {
     let path = path.as_ref();
     let extension = path.extension();
-    
+
     let mut path = path.to_owned();
     path.set_file_name(name);
-    
+
     if let Some(extension) = extension {
         path.set_extension(extension);
     }
