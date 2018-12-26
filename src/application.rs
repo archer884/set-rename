@@ -24,11 +24,21 @@ impl Application {
     }
 
     pub fn run(self) -> io::Result<()> {
-        let Config { sort, mode, base, pattern } = self.config;
+        let Config {
+            sort,
+            mode,
+            base,
+            pattern,
+        } = self.config;
 
         let mut entries: Vec<_> = fs::read_dir(&self.working_directory)?
             .filter_map(|entry| FileMeta::try_from_entry(entry).ok())
-            .filter(|entry| pattern.as_ref().map(|pattern| entry.is_match(pattern)).unwrap_or(true))
+            .filter(|entry| {
+                pattern
+                    .as_ref()
+                    .map(|pattern| entry.is_match(pattern))
+                    .unwrap_or(true)
+            })
             .collect();
 
         match sort {
