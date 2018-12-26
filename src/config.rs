@@ -1,7 +1,10 @@
+use regex::Regex;
+
 pub struct Config {
     pub sort: OrderBy,
     pub mode: Mode,
     pub base: String,
+    pub pattern: Option<Regex>,
 }
 
 pub enum OrderBy {
@@ -30,6 +33,7 @@ impl Config {
             (@arg force: -f --force "Rename files")
             (@arg duplicate: -d --duplicate "Duplicate files")
             (@arg name: +required +takes_value)
+            (@arg pattern: -p --pattern +takes_value "Filter pattern")
         );
 
         let app = app
@@ -58,6 +62,7 @@ impl Config {
             base: matches.value_of("name").expect("unreachable").into(),
             sort,
             mode,
+            pattern: matches.value_of("pattern").and_then(|s| Regex::new(s).ok()),
         }
     }
 }
