@@ -1,3 +1,4 @@
+use regex::Regex;
 use std::fs::DirEntry;
 use std::io;
 use std::path::PathBuf;
@@ -31,5 +32,15 @@ impl FileMeta {
 
     pub fn try_from_entry(entry: io::Result<DirEntry>) -> io::Result<Self> {
         Self::from_entry(&entry?)
+    }
+
+    pub fn is_match(&self, pattern: &Regex) -> bool {
+        self.path
+            .file_name()
+            .map(|name| {
+                let name = name.to_string_lossy();
+                pattern.is_match(&name)
+            })
+            .unwrap_or(false)
     }
 }
