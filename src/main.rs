@@ -1,15 +1,10 @@
-#[macro_use]
-extern crate clap;
-
 mod application;
-mod config;
 mod entry;
 mod name;
+mod options;
 
 use std::io;
 
 fn main() -> io::Result<()> {
-    use crate::{application::Application, config::Config};
-
-    Application::new(Config::from_args())?.run()
+    application::Application::new(options::from_args())?.run()
 }

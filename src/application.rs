@@ -3,33 +3,33 @@ use std::io;
 use std::path::{Path, PathBuf};
 
 use crate::{
-    config::{Config, Mode, OrderBy},
     entry::FileMeta,
     name::NameGenerator,
+    options::{Opt, SortMode},
 };
 
 pub struct Application {
-    config: Config,
+    options: Opt,
     working_directory: PathBuf,
 }
 
 impl Application {
-    pub fn new(config: Config) -> io::Result<Self> {
+    pub fn new(options: Opt) -> io::Result<Self> {
         use std::env;
 
         Ok(Self {
-            config,
+            options,
             working_directory: env::current_dir()?,
         })
     }
 
     pub fn run(self) -> io::Result<()> {
-        let Config {
+        let Opt {
+            name,
             sort,
-            mode,
-            base,
+            force,
             pattern,
-        } = self.config;
+        } = self.options;
 
         let mut entries: Vec<_> = fs::read_dir(&self.working_directory)?
             .filter_map(|entry| FileMeta::try_from_entry(entry).ok())
@@ -41,19 +41,19 @@ impl Application {
             })
             .collect();
 
-        match sort {
-            OrderBy::Created => entries.sort_by_key(|x| x.created),
-            OrderBy::Modified => entries.sort_by_key(|x| x.modified),
-            OrderBy::Size => entries.sort_by_key(|x| x.length),
+        match sort.unwrap_or(SortMode::Created) {
+            SortMode::Created => entries.sort_by_key(|x| x.created),
+            SortMode::Modified => entries.sort_by_key(|x| x.modified),
+            SortMode::Size => entries.sort_by_key(|x| x.length),
         };
 
         let padding = entries.len().to_string().len();
-        let generator = NameGenerator::new(&base, padding);
+        let generator = NameGenerator::new(&name, padding);
 
-        match mode {
-            Mode::Test => apply(entries, generator.names(), list),
-            Mode::Duplicate => apply(entries, generator.names(), copy),
-            Mode::Move => apply(entries, generator.names(), rename),
+        if force {
+            apply(entries, generator.names(), rename)
+        } else {
+            apply(entries, generator.names(), list)
         }
     }
 }
@@ -73,11 +73,6 @@ fn apply(
 
 fn list(left: &Path, right: &Path) -> io::Result<()> {
     println!("{}\n  -> {}", left.display(), right.display());
-    Ok(())
-}
-
-fn copy(left: &Path, right: &Path) -> io::Result<()> {
-    fs::copy(left, right)?;
     Ok(())
 }
 
